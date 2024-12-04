@@ -1,57 +1,51 @@
 一、时间戳
-更新NoteList类：在NoteList类的PROJECTION数组中添加COLUMN_NAME_MODIFICATION_DATE字段，以便从数据库中检索修改时间。
 
+1.更新NoteList类：在NoteList类的PROJECTION数组中添加COLUMN_NAME_MODIFICATION_DATE字段，以便从数据库中检索修改时间。
 
-private static final String[] PROJECTION = new String[] {
-NotePad.Notes._ID, // 0
-NotePad.Notes.COLUMN_NAME_TITLE, // 1
-NotePad.Notes.COLUMN_NAME_MODIFICATION_DATE, // 添加修改时间
-};
+	private static final String[] PROJECTION = new String[] {
+	NotePad.Notes._ID, // 0
+	NotePad.Notes.COLUMN_NAME_TITLE, // 1
+	NotePad.Notes.COLUMN_NAME_MODIFICATION_DATE, // 添加修改时间
+	};
 
+2.在notelist_item.xml中添加布局文件
 
-在notelist_item.xml中添加布局文件
+	<TextView
+	android:id="@+id/text2"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:paddingLeft="5dip"
+	android:singleLine="true"
+	android:gravity="center_vertical"/>
 
+3.格式化时间戳：在NoteEditor类的updateNote方法中获取当前系统的时间，并对其进行格式化，以便以更易读的格式显示。
 
+	ContentValues values = new ContentValues();
+	Long now = Long.valueOf(System.currentTimeMillis());
+	SimpleDateFormat sf = new SimpleDateFormat("yy/MM/dd HH:mm");
+	Date d = new Date(now);
+	String format = sf.format(d);
+	values.put(NotePad.Notes.COLUMN_NAME_MODIFICATION_DATE, format);
 
-<TextView
-android:id="@+id/text2"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:paddingLeft="5dip"
-android:singleLine="true"
-android:gravity="center_vertical"/>
-
-格式化时间戳：在NoteEditor类的updateNote方法中获取当前系统的时间，并对其进行格式化，以便以更易读的格式显示。
-
-
-
-ContentValues values = new ContentValues();
-Long now = Long.valueOf(System.currentTimeMillis());
-SimpleDateFormat sf = new SimpleDateFormat("yy/MM/dd HH:mm");
-Date d = new Date(now);
-String format = sf.format(d);
-values.put(NotePad.Notes.COLUMN_NAME_MODIFICATION_DATE, format);
+ ![eccf7cf56e2b3d6b4981b1671c1920d](https://github.com/user-attachments/assets/700c38e5-dcb5-4509-acf9-53ee3edf01fd)时间戳的功能显示
 
 
 
-时间戳的功能显示![eccf7cf56e2b3d6b4981b1671c1920d](https://github.com/user-attachments/assets/700c38e5-dcb5-4509-acf9-53ee3edf01fd)
-
-
-
-
+	
 
 二、笔记内容的搜索功能
-添加搜索视图：
+
+1.添加搜索视图：
 在list_options_menu.xml中添加搜索菜单项，使其在主界面上可见。
+	<item
+	android:id="@+id/menu_search"
+	android:title="@string/menu_search"
+	android:icon="@drawable/ic_search"
+	android:showAsAction="ifRoom|collapseActionView"
+	android:actionViewClass="android.widget.SearchView" />
 
 
 
-//<item
-android:id="@+id/menu_search"
-android:title="@string/menu_search"
-android:icon="@drawable/ic_search"
-android:showAsAction="ifRoom|collapseActionView"
-android:actionViewClass="android.widget.SearchView" />
 设置事件监听器：
 //private Cursor mCursor;
 @Override
@@ -108,11 +102,13 @@ public boolean onCreateOptionsMenu(Menu menu) {
 super.onCreateOptionsMenu(menu);
 MenuInflater inflater = getMenuInflater();
 inflater.inflate(R.menu.list_options_menu, menu);
-        // 添加排序选项到菜单
+        
+				// 添加排序选项到菜单
         MenuItem sortItem = menu.findItem(R.id.menu_sort);
         SubMenu sortSubMenu = sortItem.getSubMenu();
         sortSubMenu.clear(); // 清除默认子菜单项
-        // 添加按标题排序的菜单项
+        
+				// 添加按标题排序的菜单项
         sortSubMenu.add(0, R.id.sort_by_title, 0, R.string.sort_by_title)
                 .setIcon(android.R.drawable.ic_menu_sort_by_size)
                 .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
@@ -132,6 +128,8 @@ inflater.inflate(R.menu.list_options_menu, menu);
                     }
                 });
 private void sortNotesByTitle() {
+
+
 // 实现按标题排序的逻辑
 String newSortOrder = NotePad.Notes.COLUMN_NAME_TITLE + " ASC"; // 按标题升序排序
 applySortOrder(newSortOrder);
