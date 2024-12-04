@@ -157,9 +157,8 @@ private void saveSortPreference(String sortOrder) {
 
 
 二、内容变换颜色
-先将背景色改为白色
-android:theme="@android:style/Theme.Holo.Light"
-public static final String COLUMN_NAME_BACK_COLOR = "color";
+
+
 添加颜色的字段：
         @Override
         public void onCreate(SQLiteDatabase db) {
