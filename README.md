@@ -22,8 +22,8 @@ SimpleDateFormat sf = new SimpleDateFormat("yy/MM/dd HH:mm");
 Date d = new Date(now);
 String format = sf.format(d);
 values.put(NotePad.Notes.COLUMN_NAME_MODIFICATION_DATE, format);
-![eccf7cf56e2b3d6b4981b1671c1920d](https://github.com/user-attachments/assets/700c38e5-dcb5-4509-acf9-53ee3edf01fd)
-时间戳的功能显示
+时间戳的功能显示![eccf7cf56e2b3d6b4981b1671c1920d](https://github.com/user-attachments/assets/700c38e5-dcb5-4509-acf9-53ee3edf01fd)
+
 
 
 
@@ -96,12 +96,10 @@ public boolean onCreateOptionsMenu(Menu menu) {
 super.onCreateOptionsMenu(menu);
 MenuInflater inflater = getMenuInflater();
 inflater.inflate(R.menu.list_options_menu, menu);
-
         // 添加排序选项到菜单
         MenuItem sortItem = menu.findItem(R.id.menu_sort);
         SubMenu sortSubMenu = sortItem.getSubMenu();
         sortSubMenu.clear(); // 清除默认子菜单项
-
         // 添加按标题排序的菜单项
         sortSubMenu.add(0, R.id.sort_by_title, 0, R.string.sort_by_title)
                 .setIcon(android.R.drawable.ic_menu_sort_by_size)
@@ -112,7 +110,6 @@ inflater.inflate(R.menu.list_options_menu, menu);
                         return true;
                     }
                 });
-
         sortSubMenu.add(0, R.id.sort_by_date, 0, R.string.sort_by_date)
                 .setIcon(R.drawable.ic_menu_sort_by_date) // 确保你的 drawable 文件存在
                 .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
@@ -127,13 +124,11 @@ private void sortNotesByTitle() {
 String newSortOrder = NotePad.Notes.COLUMN_NAME_TITLE + " ASC"; // 按标题升序排序
 applySortOrder(newSortOrder);
 }
-
     private void sortNotesByDate() {
         // 实现按日期排序的逻辑
         String newSortOrder = NotePad.Notes.COLUMN_NAME_MODIFICATION_DATE + " DESC"; // 按修改日期降序排序
         applySortOrder(newSortOrder);
     }
-
     private void applySortOrder(String newSortOrder) {
         // 保存新的排序顺序
         sortOrder = newSortOrder;
@@ -142,23 +137,21 @@ applySortOrder(newSortOrder);
         // 保存排序偏好
         saveSortPreference(sortOrder);
     }
-
     private void refreshNotesList() {
     // 重新查询数据并更新列表
     Cursor newCursor = managedQuery(getIntent().getData(), PROJECTION, null, null, sortOrder);
     ((SimpleCursorAdapter) getListAdapter()).changeCursor(newCursor);
 }
-
 private void saveSortPreference(String sortOrder) {
     SharedPreferences preferences = getSharedPreferences("NotePadPrefs", MODE_PRIVATE);
     SharedPreferences.Editor editor = preferences.edit();
     editor.putString("SortOrder", sortOrder);
     editor.apply();
 }
-![4d1786e9abdd2f3d8a96a1252d17249](https://github.com/user-attachments/assets/2d017f0e-01bc-4c24-99d1-9d5ad02382e9)
-按标题排序
-![56345ead4c6b08d5b8cfb5f2cc3e917](https://github.com/user-attachments/assets/4030e025-58ed-49fd-a8b6-2131074e470a)
-按日期排序
+按标题排序![4d1786e9abdd2f3d8a96a1252d17249](https://github.com/user-attachments/assets/2d017f0e-01bc-4c24-99d1-9d5ad02382e9)
+
+按日期排序![56345ead4c6b08d5b8cfb5f2cc3e917](https://github.com/user-attachments/assets/4030e025-58ed-49fd-a8b6-2131074e470a)
+
 
 
 
