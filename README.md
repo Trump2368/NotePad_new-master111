@@ -1,12 +1,18 @@
 一、时间戳
 更新NoteList类：在NoteList类的PROJECTION数组中添加COLUMN_NAME_MODIFICATION_DATE字段，以便从数据库中检索修改时间。
+
+
 private static final String[] PROJECTION = new String[] {
 NotePad.Notes._ID, // 0
 NotePad.Notes.COLUMN_NAME_TITLE, // 1
 NotePad.Notes.COLUMN_NAME_MODIFICATION_DATE, // 添加修改时间
 };
 
+
 在notelist_item.xml中添加布局文件
+
+
+
 <TextView
 android:id="@+id/text2"
 android:layout_width="match_parent"
@@ -16,12 +22,18 @@ android:singleLine="true"
 android:gravity="center_vertical"/>
 
 格式化时间戳：在NoteEditor类的updateNote方法中获取当前系统的时间，并对其进行格式化，以便以更易读的格式显示。
+
+
+
 ContentValues values = new ContentValues();
 Long now = Long.valueOf(System.currentTimeMillis());
 SimpleDateFormat sf = new SimpleDateFormat("yy/MM/dd HH:mm");
 Date d = new Date(now);
 String format = sf.format(d);
 values.put(NotePad.Notes.COLUMN_NAME_MODIFICATION_DATE, format);
+
+
+
 时间戳的功能显示![eccf7cf56e2b3d6b4981b1671c1920d](https://github.com/user-attachments/assets/700c38e5-dcb5-4509-acf9-53ee3edf01fd)
 
 
@@ -31,6 +43,9 @@ values.put(NotePad.Notes.COLUMN_NAME_MODIFICATION_DATE, format);
 二、笔记内容的搜索功能
 添加搜索视图：
 在list_options_menu.xml中添加搜索菜单项，使其在主界面上可见。
+
+
+
 //<item
 android:id="@+id/menu_search"
 android:title="@string/menu_search"
