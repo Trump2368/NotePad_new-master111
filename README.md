@@ -58,9 +58,7 @@ android:actionViewClass="android.widget.SearchView" />
 public boolean onCreateOptionsMenu(Menu menu) {
 super.onCreateOptionsMenu(menu);
 MenuInflater inflater = getMenuInflater();
-
 inflater.inflate(R.menu.list_options_menu, menu);
-
         // 找到搜索菜单项并设置其监听器
         MenuItem searchItem = menu.findItem(R.id.menu_search);
         SearchView searchView = (SearchView) searchItem.getActionView();
