@@ -5,6 +5,7 @@ NotePad.Notes.COLUMN_NAME_TITLE, // 1
 NotePad.Notes.COLUMN_NAME_MODIFICATION_DATE, // 添加修改时间
 };
 
+在notelist_item.xml中添加布局文件
 <TextView
 android:id="@+id/text2"
 android:layout_width="match_parent"
@@ -12,9 +13,22 @@ android:layout_height="wrap_content"
 android:paddingLeft="5dip"
 android:singleLine="true"
 android:gravity="center_vertical"/>
-![img.png](img.png)时间戳功能图
+
+格式化时间戳：在NoteEditor类的updateNote方法中获取当前系统的时间，并对其进行格式化，以便以更易读的格式显示。
+ContentValues values = new ContentValues();
+Long now = Long.valueOf(System.currentTimeMillis());
+SimpleDateFormat sf = new SimpleDateFormat("yy/MM/dd HH:mm");
+Date d = new Date(now);
+String format = sf.format(d);
+values.put(NotePad.Notes.COLUMN_NAME_MODIFICATION_DATE, format);
+![c2f0c1ec0e7929dcd4c758575f5e7b54_](https://github.com/user-attachments/assets/ae62776b-704a-4ba6-8221-53e177c5a1f1)
+
+
 
 二、笔记内容的搜索功能
+添加搜索视图（SearchView）：
+
+在res/menu/list_options_menu.xml中添加搜索菜单项，使其在主界面上可见。
 <item
 android:id="@+id/menu_search"
 android:title="@string/menu_search"
