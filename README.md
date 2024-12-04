@@ -31,18 +31,19 @@ values.put(NotePad.Notes.COLUMN_NAME_MODIFICATION_DATE, format);
 二、笔记内容的搜索功能
 添加搜索视图：
 在list_options_menu.xml中添加搜索菜单项，使其在主界面上可见。
-<item
+//<item
 android:id="@+id/menu_search"
 android:title="@string/menu_search"
 android:icon="@drawable/ic_search"
 android:showAsAction="ifRoom|collapseActionView"
 android:actionViewClass="android.widget.SearchView" />
 设置事件监听器：
-private Cursor mCursor;
+//private Cursor mCursor;
 @Override
 public boolean onCreateOptionsMenu(Menu menu) {
 super.onCreateOptionsMenu(menu);
 MenuInflater inflater = getMenuInflater();
+
 inflater.inflate(R.menu.list_options_menu, menu);
 
         // 找到搜索菜单项并设置其监听器
@@ -54,7 +55,6 @@ inflater.inflate(R.menu.list_options_menu, menu);
                 // 处理搜索提交事件
                 return false;
             }
-
             @Override
             public boolean onQueryTextChange(String newText) { 
                 // 处理搜索文本变化事件
@@ -62,7 +62,6 @@ inflater.inflate(R.menu.list_options_menu, menu);
                 return false;
             }
         });
-
         return true;
     }
 ![08ed699f33aa511c07713a1b930080b](https://github.com/user-attachments/assets/65adfb45-f1b5-472c-927b-059948c7bf47)
