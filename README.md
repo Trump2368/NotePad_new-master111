@@ -1,4 +1,5 @@
 一、时间戳
+更新NoteList类：在NoteList类的PROJECTION数组中添加COLUMN_NAME_MODIFICATION_DATE字段，以便从数据库中检索修改时间。
 private static final String[] PROJECTION = new String[] {
 NotePad.Notes._ID, // 0
 NotePad.Notes.COLUMN_NAME_TITLE, // 1
@@ -21,20 +22,22 @@ SimpleDateFormat sf = new SimpleDateFormat("yy/MM/dd HH:mm");
 Date d = new Date(now);
 String format = sf.format(d);
 values.put(NotePad.Notes.COLUMN_NAME_MODIFICATION_DATE, format);
-![c2f0c1ec0e7929dcd4c758575f5e7b54_](https://github.com/user-attachments/assets/ae62776b-704a-4ba6-8221-53e177c5a1f1)
+![eccf7cf56e2b3d6b4981b1671c1920d](https://github.com/user-attachments/assets/700c38e5-dcb5-4509-acf9-53ee3edf01fd)
+时间戳的功能显示
+
 
 
 
 二、笔记内容的搜索功能
-添加搜索视图（SearchView）：
-
-在res/menu/list_options_menu.xml中添加搜索菜单项，使其在主界面上可见。
+添加搜索视图：
+在list_options_menu.xml中添加搜索菜单项，使其在主界面上可见。
 <item
 android:id="@+id/menu_search"
 android:title="@string/menu_search"
 android:icon="@drawable/ic_search"
 android:showAsAction="ifRoom|collapseActionView"
 android:actionViewClass="android.widget.SearchView" />
+设置事件监听器：
 private Cursor mCursor;
 @Override
 public boolean onCreateOptionsMenu(Menu menu) {
@@ -53,7 +56,7 @@ inflater.inflate(R.menu.list_options_menu, menu);
             }
 
             @Override
-            public boolean onQueryTextChange(String newText) {
+            public boolean onQueryTextChange(String newText) { 
                 // 处理搜索文本变化事件
                 filterNotesList(newText);
                 return false;
@@ -62,9 +65,105 @@ inflater.inflate(R.menu.list_options_menu, menu);
 
         return true;
     }
+![08ed699f33aa511c07713a1b930080b](https://github.com/user-attachments/assets/65adfb45-f1b5-472c-927b-059948c7bf47)
+![f66a04d4e0a005e8fbe857e25a14833](https://github.com/user-attachments/assets/bf9ef17a-b8ec-4bab-8373-6cb75365b38b)搜索内容K
+![d7f357b9391344275be9dbecb902ce1](https://github.com/user-attachments/assets/1f051f69-5207-4a16-9c5f-8f3956fde99c)搜索内容a
 
 
-三、内容变换颜色
+扩展功能：
+一、排序
+这项功能分为按标题排序和按日期排序
+1.在list_options_menu.xml中添加排序菜单选项
+<item
+    android:id="@+id/menu_sort"
+    android:title="@string/sort"
+    android:showAsAction="never">
+    <menu>
+        <item
+            android:id="@+id/sort_by_title"
+            android:title="@string/sort_by_title" />
+        <item
+            android:id="@+id/sort_by_date"
+            android:title="@string/sort_by_date" />
+        <!-- 可以根据需要添加更多排序选项 -->
+    </menu>
+</item>
+![199ccb34f4c5a684e4bc47ab3d12121](https://github.com/user-attachments/assets/14c8b0dd-8be9-4d71-a1b7-df56ba88fa92)
+
+2.在NoteList类中添加排序功能
+@Override
+public boolean onCreateOptionsMenu(Menu menu) {
+super.onCreateOptionsMenu(menu);
+MenuInflater inflater = getMenuInflater();
+inflater.inflate(R.menu.list_options_menu, menu);
+
+        // 添加排序选项到菜单
+        MenuItem sortItem = menu.findItem(R.id.menu_sort);
+        SubMenu sortSubMenu = sortItem.getSubMenu();
+        sortSubMenu.clear(); // 清除默认子菜单项
+
+        // 添加按标题排序的菜单项
+        sortSubMenu.add(0, R.id.sort_by_title, 0, R.string.sort_by_title)
+                .setIcon(android.R.drawable.ic_menu_sort_by_size)
+                .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        sortNotesByTitle();
+                        return true;
+                    }
+                });
+
+        sortSubMenu.add(0, R.id.sort_by_date, 0, R.string.sort_by_date)
+                .setIcon(R.drawable.ic_menu_sort_by_date) // 确保你的 drawable 文件存在
+                .setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        sortNotesByDate();
+                        return true;
+                    }
+                });
+private void sortNotesByTitle() {
+// 实现按标题排序的逻辑
+String newSortOrder = NotePad.Notes.COLUMN_NAME_TITLE + " ASC"; // 按标题升序排序
+applySortOrder(newSortOrder);
+}
+
+    private void sortNotesByDate() {
+        // 实现按日期排序的逻辑
+        String newSortOrder = NotePad.Notes.COLUMN_NAME_MODIFICATION_DATE + " DESC"; // 按修改日期降序排序
+        applySortOrder(newSortOrder);
+    }
+
+    private void applySortOrder(String newSortOrder) {
+        // 保存新的排序顺序
+        sortOrder = newSortOrder;
+        // 重新加载笔记列表
+        refreshNotesList();
+        // 保存排序偏好
+        saveSortPreference(sortOrder);
+    }
+
+    private void refreshNotesList() {
+    // 重新查询数据并更新列表
+    Cursor newCursor = managedQuery(getIntent().getData(), PROJECTION, null, null, sortOrder);
+    ((SimpleCursorAdapter) getListAdapter()).changeCursor(newCursor);
+}
+
+private void saveSortPreference(String sortOrder) {
+    SharedPreferences preferences = getSharedPreferences("NotePadPrefs", MODE_PRIVATE);
+    SharedPreferences.Editor editor = preferences.edit();
+    editor.putString("SortOrder", sortOrder);
+    editor.apply();
+}
+![4d1786e9abdd2f3d8a96a1252d17249](https://github.com/user-attachments/assets/2d017f0e-01bc-4c24-99d1-9d5ad02382e9)
+按标题排序
+![56345ead4c6b08d5b8cfb5f2cc3e917](https://github.com/user-attachments/assets/4030e025-58ed-49fd-a8b6-2131074e470a)
+按日期排序
+
+
+
+
+二、内容变换颜色
 先将背景色改为白色
 android:theme="@android:style/Theme.Holo.Light"
 public static final String COLUMN_NAME_BACK_COLOR = "color";
@@ -123,90 +222,6 @@ break;
 }
 }
 }
-![img_1.png](img_1.png)效果图
+![image](https://github.com/user-attachments/assets/ab6696ec-01a4-4824-a977-aa71089933c1)
 
-四、背景更换
-private static final String[] PROJECTION =
-new String[] {
-NotePad.Notes._ID,
-NotePad.Notes.COLUMN_NAME_TITLE,
-NotePad.Notes.COLUMN_NAME_NOTE,
-NotePad.Notes.COLUMN_NAME_BACK_COLOR
-};
-添加更换背景的图标
-<item android:id="@+id/menu_color"
-android:title="@string/menu_color"
-android:icon="@drawable/ic_menu_color"
-android:showAsAction="always"/>
-换背景颜色选项
-case R.id.menu_color:
-changeColor();
-break;
 
-主要类
-public class NoteColor extends Activity {
-private Cursor mCursor;
-private Uri mUri;
-private int color;
-private static final int COLUMN_INDEX_TITLE = 1;
-private static final String[] PROJECTION = new String[] {
-NotePad.Notes._ID, // 0
-NotePad.Notes.COLUMN_NAME_BACK_COLOR,
-};
-public void onCreate(Bundle savedInstanceState) {
-super.onCreate(savedInstanceState);
-setContentView(R.layout.note_color);
-//从NoteEditor传入的uri
-mUri = getIntent().getData();
-mCursor = managedQuery(
-mUri,        // The URI for the note that is to be retrieved.
-PROJECTION,  // The columns to retrieve
-null,        // No selection criteria are used, so no where columns are needed.
-null,        // No where columns are used, so no where values are needed.
-null         // No sort order is needed.
-);
-}
-@Override
-protected void onResume(){
-//执行顺序在onCreate之后
-if (mCursor != null) {
-mCursor.moveToFirst();
-color = mCursor.getInt(COLUMN_INDEX_TITLE);
-}
-super.onResume();
-}
-@Override
-protected void onPause() {
-//执行顺序在finish()之后，将选择的颜色存入数据库
-super.onPause();
-ContentValues values = new ContentValues();
-values.put(NotePad.Notes.COLUMN_NAME_BACK_COLOR, color);
-getContentResolver().update(mUri, values, null, null);
-}
-public void white(View view){
-color = NotePad.Notes.DEFAULT_COLOR;
-finish();
-}
-public void yellow(View view){
-color = NotePad.Notes.YELLOW_COLOR;
-finish();
-}
-public void blue(View view){
-color = NotePad.Notes.BLUE_COLOR;
-finish();
-}
-public void green(View view){
-color = NotePad.Notes.GREEN_COLOR;
-finish();
-}
-public void red(View view){
-color = NotePad.Notes.RED_COLOR;
-finish();
-}
-}
-换背景色
-<activity android:name="NoteColor"
-android:theme="@android:style/Theme.Holo.Light.Dialog"
-android:label="ChangeColor"
-android:windowSoftInputMode="stateVisible"/>
-![img_2.png](img_2.png)效果图
